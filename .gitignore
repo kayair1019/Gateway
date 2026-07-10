@@ -1,0 +1,10 @@
+build/
+cmake-build-*/
+CTestTestfile.cmake
+Testing/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe

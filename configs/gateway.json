@@ -1,0 +1,48 @@
+{
+  "gateway_id": "gateway-001",
+  "southbound": {
+    "devices": [
+      {
+        "device_id": "device-001",
+        "protocol": "modbus_tcp",
+        "host": "127.0.0.1",
+        "port": 1502,
+        "unit_id": 1,
+        "poll_interval_ms": 1000,
+        "points": [
+          {
+            "name": "temperature",
+            "address": 0,
+            "type": "uint16",
+            "scale": 0.1
+          },
+          {
+            "name": "pressure",
+            "address": 1,
+            "type": "uint16",
+            "scale": 0.01
+          }
+        ]
+      }
+    ]
+  },
+  "northbound": {
+    "mqtt": {
+      "host": "127.0.0.1",
+      "port": 1883,
+      "client_id": "edge-gateway-001"
+    }
+  },
+  "rules": [
+    {
+      "name": "temperature_limit",
+      "point": "temperature",
+      "operator": "<",
+      "value": 80.0,
+      "action": "allow"
+    }
+  ],
+  "queue": {
+    "telemetry_capacity": 1024
+  }
+}
