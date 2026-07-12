@@ -31,6 +31,7 @@ target_include_directories(asio_standalone INTERFACE
 target_compile_definitions(asio_standalone INTERFACE ASIO_STANDALONE)
 
 add_library(edge_gateway_core
+    src/core/config.cpp
     src/core/error.cpp
     src/core/message.cpp
     src/northbound/console_mqtt_client.cpp
@@ -39,6 +40,7 @@ add_library(edge_gateway_core
     src/rule/rule_engine.cpp
     src/runtime/gateway_app.cpp
     src/runtime/worker.cpp
+    src/southbound/modbus_device_simulator.cpp
 )
 
 target_include_directories(edge_gateway_core PUBLIC
@@ -86,7 +88,9 @@ if(EGW_BUILD_TESTS)
 
     add_executable(edge_gateway_tests
         tests/test_command_flow.cpp
+        tests/test_config.cpp
         tests/test_message_model.cpp
+        tests/test_modbus_device_simulator.cpp
         tests/test_modbus_tcp_codec.cpp
         tests/test_mqtt_message_mapper.cpp
         tests/test_rule_engine.cpp
@@ -96,6 +100,10 @@ if(EGW_BUILD_TESTS)
     target_link_libraries(edge_gateway_tests PRIVATE
         edge_gateway_core
         GTest::gtest_main
+    )
+
+    target_compile_definitions(edge_gateway_tests PRIVATE
+        EGW_SOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}"
     )
 
     include(GoogleTest)
