@@ -5,9 +5,7 @@
 namespace gateway::runtime {
 
 auto GatewayApp::run() -> int {
-    std::cout << "edge_gateway skeleton started\n";
-    io_context_.poll();
-    return 0;
+    return {};
 }
 
 } // namespace gateway::runtime
