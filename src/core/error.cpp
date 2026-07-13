@@ -2,7 +2,7 @@
 
 namespace gateway::core {
 
-auto to_string(ErrorCode error) -> std::string_view {
+std::string_view to_string(ErrorCode error) {
     switch (error) {
     case ErrorCode::none:
         return "none";

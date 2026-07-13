@@ -60,14 +60,14 @@ struct CommandAck {
     std::chrono::system_clock::time_point timestamp{};
 };
 
-auto point_quality_to_string(PointQuality quality) -> std::string_view;
-auto command_status_to_string(CommandStatus status) -> std::string_view;
-auto command_type_to_string(CommandType type) -> std::string_view;
-auto command_type_from_string(std::string_view value) -> std::optional<CommandType>;
+std::string_view point_quality_to_string(PointQuality quality);
+std::string_view command_status_to_string(CommandStatus status);
+std::string_view command_type_to_string(CommandType type);
+std::optional<CommandType> command_type_from_string(std::string_view value);
 
-auto to_json(const TelemetryMessage& message) -> nlohmann::json;
-auto to_json(const CommandAck& ack) -> nlohmann::json;
-auto parse_command(const nlohmann::json& payload) -> std::optional<CommandMessage>;
-auto to_unix_millis(std::chrono::system_clock::time_point timestamp) -> std::int64_t;
+nlohmann::json to_json(const TelemetryMessage& message);
+nlohmann::json to_json(const CommandAck& ack);
+std::optional<CommandMessage> parse_command(const nlohmann::json& payload);
+std::int64_t to_unix_millis(std::chrono::system_clock::time_point timestamp);
 
 } // namespace gateway::core

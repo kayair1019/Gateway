@@ -159,18 +159,6 @@ using namespace std;
 
 函数应短小，职责单一。
 
-推荐返回类型后置写法用于复杂类型：
-
-```cpp
-auto decode_response(std::span<const std::uint8_t> bytes) -> DecodeResult;
-```
-
-简单类型可以使用普通写法：
-
-```cpp
-bool empty() const;
-```
-
 函数参数约定：
 
 - 输入字符串优先用 `std::string_view`。
@@ -182,8 +170,8 @@ bool empty() const;
 示例：
 
 ```cpp
-auto parse_command(std::string_view payload) -> ParseCommandResult;
-auto decode_response(std::span<const std::uint8_t> bytes) -> DecodeResult;
+DecodeResult decode_response(std::span<const std::uint8_t> bytes);
+std::optional<CommandMessage> parse_command(std::string_view payload);
 ```
 
 ## 8. 类设计

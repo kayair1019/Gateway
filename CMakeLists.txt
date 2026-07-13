@@ -40,7 +40,10 @@ add_library(edge_gateway_core
     src/rule/rule_engine.cpp
     src/runtime/gateway_app.cpp
     src/runtime/worker.cpp
-    src/southbound/modbus_device_simulator.cpp
+    src/southbound/device_poller.cpp
+    src/southbound/modbus_point_mapper.cpp
+    src/southbound/modbus_tcp_client.cpp
+    src/simulator/modbus_device_simulator.cpp
 )
 
 target_include_directories(edge_gateway_core PUBLIC
@@ -89,8 +92,10 @@ if(EGW_BUILD_TESTS)
     add_executable(edge_gateway_tests
         tests/test_command_flow.cpp
         tests/test_config.cpp
+        tests/test_device_poller.cpp
         tests/test_message_model.cpp
         tests/test_modbus_device_simulator.cpp
+        tests/test_modbus_point_mapper.cpp
         tests/test_modbus_tcp_codec.cpp
         tests/test_mqtt_message_mapper.cpp
         tests/test_rule_engine.cpp

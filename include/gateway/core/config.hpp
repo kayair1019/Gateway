@@ -49,7 +49,7 @@ struct SimulatorConfig {
     std::unordered_map<std::uint16_t, std::uint16_t> holding_registers;
 };
 
-auto load_gateway_config(const std::string& path) -> GatewayConfig;
-auto load_simulator_config(const std::string& path) -> SimulatorConfig;
+GatewayConfig load_gateway_config(const std::string& path);
+SimulatorConfig load_simulator_config(const std::string& path);
 
 } // namespace gateway::core

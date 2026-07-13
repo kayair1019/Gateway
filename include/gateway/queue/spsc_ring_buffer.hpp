@@ -16,7 +16,7 @@ class SpscRingBuffer {
 public:
     SpscRingBuffer() : buffer_(Capacity) {}
 
-    auto push(const T& item) -> bool {
+    bool push(const T& item) {
         const auto tail = tail_.load(std::memory_order_relaxed);
         const auto next_tail = (tail + 1) & mask_;
 
@@ -29,7 +29,7 @@ public:
         return true;
     }
 
-    auto pop(T& item) -> bool {
+    bool pop(T& item) {
         const auto head = head_.load(std::memory_order_relaxed);
 
         if (head == tail_.load(std::memory_order_acquire)) {
@@ -41,13 +41,13 @@ public:
         return true;
     }
 
-    auto size() const -> std::size_t {
+    std::size_t size() const {
         const auto head = head_.load(std::memory_order_relaxed);
         const auto tail = tail_.load(std::memory_order_relaxed);
         return (tail - head) & mask_;
     }
 
-    auto capacity() const -> std::size_t {
+    std::size_t capacity() const {
         return mask_;
     }
 

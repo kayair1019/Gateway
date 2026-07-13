@@ -12,7 +12,7 @@ public:
     RuleEngine() = default;
     explicit RuleEngine(std::vector<Rule> rules);
 
-    auto evaluate(const gateway::core::TelemetryMessage& message) const -> RuleResult;
+    RuleResult evaluate(const gateway::core::TelemetryMessage& message) const;
 
 private:
     std::vector<Rule> rules_;

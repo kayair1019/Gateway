@@ -16,6 +16,6 @@ enum class ErrorCode {
     device_not_found
 };
 
-auto to_string(ErrorCode error) -> std::string_view;
+std::string_view to_string(ErrorCode error);
 
 } // namespace gateway::core

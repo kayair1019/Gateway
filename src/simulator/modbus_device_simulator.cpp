@@ -1,11 +1,11 @@
-#include "gateway/southbound/modbus_device_simulator.hpp"
+#include "gateway/simulator/modbus_device_simulator.hpp"
 
 #include <array>
 #include <iostream>
 
 #include <asio.hpp>
 
-namespace gateway::southbound {
+namespace gateway::simulator {
 namespace {
 
 constexpr std::uint16_t kProtocolId = 0;
@@ -21,16 +21,16 @@ void append_u16(std::vector<std::uint8_t>& bytes, std::uint16_t value) {
     bytes.push_back(static_cast<std::uint8_t>(value & 0xff));
 }
 
-auto read_u16(std::span<const std::uint8_t> bytes, std::size_t offset) -> std::uint16_t {
+std::uint16_t read_u16(std::span<const std::uint8_t> bytes, std::size_t offset) {
     return static_cast<std::uint16_t>((static_cast<std::uint16_t>(bytes[offset]) << 8) |
                                       static_cast<std::uint16_t>(bytes[offset + 1]));
 }
 
-auto make_exception_response(
+std::vector<std::uint8_t> make_exception_response(
     std::uint16_t transaction_id,
     std::uint8_t unit_id,
     std::uint8_t function_code,
-    std::uint8_t exception_code) -> std::vector<std::uint8_t> {
+    std::uint8_t exception_code) {
     std::vector<std::uint8_t> response;
     response.reserve(9);
     append_u16(response, transaction_id);
@@ -47,7 +47,7 @@ auto make_exception_response(
 ModbusDeviceSimulator::ModbusDeviceSimulator(gateway::core::SimulatorConfig config)
     : config_(std::move(config)), holding_registers_(config_.holding_registers) {}
 
-auto ModbusDeviceSimulator::run() -> int {
+int ModbusDeviceSimulator::run() {
     asio::io_context io_context;
     const auto address = asio::ip::make_address(config_.host);
     asio::ip::tcp::acceptor acceptor(
@@ -92,8 +92,7 @@ auto ModbusDeviceSimulator::run() -> int {
     }
 }
 
-auto ModbusDeviceSimulator::handle_request(std::span<const std::uint8_t> request)
-    -> std::vector<std::uint8_t> {
+std::vector<std::uint8_t> ModbusDeviceSimulator::handle_request(std::span<const std::uint8_t> request) {
     if (request.size() < kRequestSize) {
         return {};
     }
@@ -148,4 +147,4 @@ auto ModbusDeviceSimulator::handle_request(std::span<const std::uint8_t> request
     return make_exception_response(transaction_id, unit_id, function_code, kIllegalFunction);
 }
 
-} // namespace gateway::southbound
+} // namespace gateway::simulator

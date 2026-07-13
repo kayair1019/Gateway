@@ -14,12 +14,12 @@ void append_u16(std::vector<std::uint8_t>& bytes, std::uint16_t value) {
     bytes.push_back(static_cast<std::uint8_t>(value & 0xff));
 }
 
-auto read_u16(std::span<const std::uint8_t> bytes, std::size_t offset) -> std::uint16_t {
+std::uint16_t read_u16(std::span<const std::uint8_t> bytes, std::size_t offset) {
     return static_cast<std::uint16_t>((static_cast<std::uint16_t>(bytes[offset]) << 8) |
                                       static_cast<std::uint16_t>(bytes[offset + 1]));
 }
 
-auto make_error(gateway::core::ErrorCode error) -> DecodeResult {
+DecodeResult make_error(gateway::core::ErrorCode error) {
     DecodeResult result;
     result.ok = false;
     result.error = error;
@@ -28,11 +28,11 @@ auto make_error(gateway::core::ErrorCode error) -> DecodeResult {
 
 } // namespace
 
-auto ModbusTcpCodec::encode_read_holding_registers(
+std::vector<std::uint8_t> ModbusTcpCodec::encode_read_holding_registers(
     std::uint16_t transaction_id,
     std::uint8_t unit_id,
     std::uint16_t start_address,
-    std::uint16_t quantity) const -> std::vector<std::uint8_t> {
+    std::uint16_t quantity) const {
     std::vector<std::uint8_t> bytes;
     bytes.reserve(12);
 
@@ -47,11 +47,11 @@ auto ModbusTcpCodec::encode_read_holding_registers(
     return bytes;
 }
 
-auto ModbusTcpCodec::encode_write_single_register(
+std::vector<std::uint8_t> ModbusTcpCodec::encode_write_single_register(
     std::uint16_t transaction_id,
     std::uint8_t unit_id,
     std::uint16_t address,
-    std::uint16_t value) const -> std::vector<std::uint8_t> {
+    std::uint16_t value) const {
     std::vector<std::uint8_t> bytes;
     bytes.reserve(12);
 
@@ -66,10 +66,10 @@ auto ModbusTcpCodec::encode_write_single_register(
     return bytes;
 }
 
-auto ModbusTcpCodec::decode_read_holding_registers_response(
+DecodeResult ModbusTcpCodec::decode_read_holding_registers_response(
     std::span<const std::uint8_t> bytes,
     std::uint16_t expected_transaction_id,
-    std::uint8_t expected_unit_id) const -> DecodeResult {
+    std::uint8_t expected_unit_id) const {
     if (bytes.size() < kReadResponseMinSize) {
         return make_error(gateway::core::ErrorCode::protocol_error);
     }

@@ -17,15 +17,13 @@ class MqttMessageMapper {
 public:
     explicit MqttMessageMapper(std::string gateway_id);
 
-    auto telemetry_topic(std::string_view device_id) const -> std::string;
-    auto command_topic(std::string_view device_id) const -> std::string;
-    auto command_ack_topic(std::string_view device_id) const -> std::string;
+    std::string telemetry_topic(std::string_view device_id) const;
+    std::string command_topic(std::string_view device_id) const;
+    std::string command_ack_topic(std::string_view device_id) const;
 
-    auto map_telemetry(const gateway::core::TelemetryMessage& message) const
-        -> MqttPublishMessage;
-    auto map_command_ack(const gateway::core::CommandAck& ack) const -> MqttPublishMessage;
-    auto parse_command(std::string_view payload) const
-        -> std::optional<gateway::core::CommandMessage>;
+    MqttPublishMessage map_telemetry(const gateway::core::TelemetryMessage& message) const;
+    MqttPublishMessage map_command_ack(const gateway::core::CommandAck& ack) const;
+    std::optional<gateway::core::CommandMessage> parse_command(std::string_view payload) const;
 
 private:
     std::string gateway_id_;

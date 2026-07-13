@@ -1,4 +1,4 @@
-#include "gateway/southbound/modbus_device_simulator.hpp"
+#include "gateway/simulator/modbus_device_simulator.hpp"
 
 #include "gateway/protocol/modbus_tcp_codec.hpp"
 
@@ -20,7 +20,7 @@ auto make_config() -> gateway::core::SimulatorConfig {
 }
 
 TEST(ModbusDeviceSimulatorTest, HandlesReadHoldingRegistersRequest) {
-    gateway::southbound::ModbusDeviceSimulator simulator(make_config());
+    gateway::simulator::ModbusDeviceSimulator simulator(make_config());
     const gateway::protocol::ModbusTcpCodec codec;
     const auto request = codec.encode_read_holding_registers(11, 1, 0, 2);
 
@@ -34,7 +34,7 @@ TEST(ModbusDeviceSimulatorTest, HandlesReadHoldingRegistersRequest) {
 }
 
 TEST(ModbusDeviceSimulatorTest, HandlesWriteSingleRegisterRequest) {
-    gateway::southbound::ModbusDeviceSimulator simulator(make_config());
+    gateway::simulator::ModbusDeviceSimulator simulator(make_config());
     const gateway::protocol::ModbusTcpCodec codec;
     const auto write_request = codec.encode_write_single_register(12, 1, 1, 42);
 
@@ -52,7 +52,7 @@ TEST(ModbusDeviceSimulatorTest, HandlesWriteSingleRegisterRequest) {
 }
 
 TEST(ModbusDeviceSimulatorTest, ReturnsExceptionForMissingRegister) {
-    gateway::southbound::ModbusDeviceSimulator simulator(make_config());
+    gateway::simulator::ModbusDeviceSimulator simulator(make_config());
     const gateway::protocol::ModbusTcpCodec codec;
     const auto request = codec.encode_read_holding_registers(14, 1, 9, 1);
 

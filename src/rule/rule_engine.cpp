@@ -6,7 +6,7 @@
 namespace gateway::rule {
 namespace {
 
-auto matches(double actual, CompareOperator op, double expected) -> bool {
+bool matches(double actual, CompareOperator op, double expected) {
     switch (op) {
     case CompareOperator::less_than:
         return actual < expected;
@@ -27,7 +27,7 @@ auto matches(double actual, CompareOperator op, double expected) -> bool {
 
 RuleEngine::RuleEngine(std::vector<Rule> rules) : rules_(std::move(rules)) {}
 
-auto RuleEngine::evaluate(const gateway::core::TelemetryMessage& message) const -> RuleResult {
+RuleResult RuleEngine::evaluate(const gateway::core::TelemetryMessage& message) const {
     if (rules_.empty()) {
         return {.allowed = true, .matched_rule = ""};
     }

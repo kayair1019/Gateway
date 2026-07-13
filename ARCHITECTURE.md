@@ -198,12 +198,6 @@ MqttClient
     └── test_spsc_ring_buffer.cpp
 ```
 
-现有的 `include/ring_buffer.hpp` 后续应迁移到：
-
-```text
-include/gateway/queue/spsc_ring_buffer.hpp
-```
-
 ## 6. 核心模块
 
 ### 6.1 Application

@@ -9,7 +9,7 @@
 namespace gateway::core {
 namespace {
 
-auto load_json_file(const std::string& path) -> nlohmann::json {
+nlohmann::json load_json_file(const std::string& path) {
     std::ifstream input(path);
     if (!input) {
         throw std::runtime_error("failed to open config file: " + path);
@@ -20,7 +20,7 @@ auto load_json_file(const std::string& path) -> nlohmann::json {
     return json;
 }
 
-auto to_u16(const nlohmann::json& json, const char* field) -> std::uint16_t {
+std::uint16_t to_u16(const nlohmann::json& json, const char* field) {
     const auto value = json.at(field).get<int>();
     if (value < 0 || value > 65535) {
         throw std::runtime_error(std::string("config field out of uint16 range: ") + field);
@@ -28,7 +28,7 @@ auto to_u16(const nlohmann::json& json, const char* field) -> std::uint16_t {
     return static_cast<std::uint16_t>(value);
 }
 
-auto to_u8(const nlohmann::json& json, const char* field) -> std::uint8_t {
+std::uint8_t to_u8(const nlohmann::json& json, const char* field) {
     const auto value = json.at(field).get<int>();
     if (value < 0 || value > 255) {
         throw std::runtime_error(std::string("config field out of uint8 range: ") + field);
@@ -38,7 +38,7 @@ auto to_u8(const nlohmann::json& json, const char* field) -> std::uint8_t {
 
 } // namespace
 
-auto load_gateway_config(const std::string& path) -> GatewayConfig {
+GatewayConfig load_gateway_config(const std::string& path) {
     const auto json = load_json_file(path);
 
     GatewayConfig config;
@@ -83,7 +83,7 @@ auto load_gateway_config(const std::string& path) -> GatewayConfig {
     return config;
 }
 
-auto load_simulator_config(const std::string& path) -> SimulatorConfig {
+SimulatorConfig load_simulator_config(const std::string& path) {
     const auto json = load_json_file(path);
 
     SimulatorConfig config;

@@ -22,22 +22,22 @@ struct DecodeResult {
 
 class ModbusTcpCodec {
 public:
-    auto encode_read_holding_registers(
+    std::vector<std::uint8_t> encode_read_holding_registers(
         std::uint16_t transaction_id,
         std::uint8_t unit_id,
         std::uint16_t start_address,
-        std::uint16_t quantity) const -> std::vector<std::uint8_t>;
+        std::uint16_t quantity) const;
 
-    auto encode_write_single_register(
+    std::vector<std::uint8_t> encode_write_single_register(
         std::uint16_t transaction_id,
         std::uint8_t unit_id,
         std::uint16_t address,
-        std::uint16_t value) const -> std::vector<std::uint8_t>;
+        std::uint16_t value) const;
 
-    auto decode_read_holding_registers_response(
+    DecodeResult decode_read_holding_registers_response(
         std::span<const std::uint8_t> bytes,
         std::uint16_t expected_transaction_id,
-        std::uint8_t expected_unit_id) const -> DecodeResult;
+        std::uint8_t expected_unit_id) const;
 };
 
 } // namespace gateway::protocol

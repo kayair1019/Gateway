@@ -4,7 +4,7 @@
 
 namespace gateway::core {
 
-auto point_quality_to_string(PointQuality quality) -> std::string_view {
+std::string_view point_quality_to_string(PointQuality quality) {
     switch (quality) {
     case PointQuality::good:
         return "good";
@@ -15,7 +15,7 @@ auto point_quality_to_string(PointQuality quality) -> std::string_view {
     return "bad";
 }
 
-auto command_status_to_string(CommandStatus status) -> std::string_view {
+std::string_view command_status_to_string(CommandStatus status) {
     switch (status) {
     case CommandStatus::success:
         return "success";
@@ -26,7 +26,7 @@ auto command_status_to_string(CommandStatus status) -> std::string_view {
     return "failed";
 }
 
-auto command_type_to_string(CommandType type) -> std::string_view {
+std::string_view command_type_to_string(CommandType type) {
     switch (type) {
     case CommandType::read_register:
         return "read_register";
@@ -37,7 +37,7 @@ auto command_type_to_string(CommandType type) -> std::string_view {
     return "read_register";
 }
 
-auto command_type_from_string(std::string_view value) -> std::optional<CommandType> {
+std::optional<CommandType> command_type_from_string(std::string_view value) {
     if (value == "read_register") {
         return CommandType::read_register;
     }
@@ -49,12 +49,12 @@ auto command_type_from_string(std::string_view value) -> std::optional<CommandTy
     return std::nullopt;
 }
 
-auto to_unix_millis(std::chrono::system_clock::time_point timestamp) -> std::int64_t {
+std::int64_t to_unix_millis(std::chrono::system_clock::time_point timestamp) {
     const auto duration = timestamp.time_since_epoch();
     return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
-auto to_json(const TelemetryMessage& message) -> nlohmann::json {
+nlohmann::json to_json(const TelemetryMessage& message) {
     nlohmann::json points = nlohmann::json::array();
     for (const auto& point : message.points) {
         points.push_back({
@@ -73,7 +73,7 @@ auto to_json(const TelemetryMessage& message) -> nlohmann::json {
     };
 }
 
-auto to_json(const CommandAck& ack) -> nlohmann::json {
+nlohmann::json to_json(const CommandAck& ack) {
     nlohmann::json payload{
         {"command_id", ack.command_id},
         {"device_id", ack.device_id},
@@ -89,7 +89,7 @@ auto to_json(const CommandAck& ack) -> nlohmann::json {
     return payload;
 }
 
-auto parse_command(const nlohmann::json& payload) -> std::optional<CommandMessage> {
+std::optional<CommandMessage> parse_command(const nlohmann::json& payload) {
     if (!payload.contains("command_id") || !payload.contains("device_id") ||
         !payload.contains("type") || !payload.contains("address")) {
         return std::nullopt;
