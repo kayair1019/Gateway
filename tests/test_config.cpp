@@ -22,6 +22,12 @@ TEST(ConfigTest, LoadsGatewayConfig) {
     EXPECT_EQ(config.devices[0].points[0].name, "temperature");
     EXPECT_EQ(config.mqtt.client_id, "edge-gateway-001");
     EXPECT_EQ(config.queue.telemetry_capacity, 1024U);
+    ASSERT_EQ(config.rules.size(), 1U);
+    EXPECT_EQ(config.rules[0].name, "temperature_limit");
+    EXPECT_EQ(config.rules[0].point, "temperature");
+    EXPECT_EQ(config.rules[0].op, gateway::rule::CompareOperator::less_than);
+    EXPECT_DOUBLE_EQ(config.rules[0].value, 80.0);
+    EXPECT_EQ(config.rules[0].action, gateway::rule::RuleAction::allow);
 }
 
 TEST(ConfigTest, LoadsSimulatorConfig) {

@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "gateway/rule/rule.hpp"
+
 namespace gateway::core {
 
 struct PointConfig {
@@ -40,6 +42,7 @@ struct GatewayConfig {
     std::vector<DeviceConfig> devices;
     MqttConfig mqtt;
     QueueConfig queue;
+    std::vector<gateway::rule::Rule> rules;
 };
 
 struct SimulatorConfig {

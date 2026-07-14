@@ -1,17 +1,24 @@
 #include "gateway/runtime/gateway_app.hpp"
 
 #include <iostream>
+#include <thread>
 #include <utility>
 
 #include "gateway/core/error.hpp"
 #include "gateway/northbound/console_mqtt_client.hpp"
 #include "gateway/northbound/mqtt_message_mapper.hpp"
+#include "gateway/queue/spsc_ring_buffer.hpp"
 #include "gateway/rule/rule_engine.hpp"
 #include "gateway/runtime/worker.hpp"
 #include "gateway/southbound/device_poller.hpp"
 #include "gateway/southbound/modbus_tcp_client.hpp"
 
 namespace gateway::runtime {
+namespace {
+
+constexpr std::size_t kTelemetryQueueCapacity = 1024;
+
+} // namespace
 
 GatewayApp::GatewayApp(gateway::core::GatewayConfig config) : config_(std::move(config)) {}
 
@@ -23,7 +30,7 @@ int GatewayApp::run() {
 
     gateway::northbound::ConsoleMqttClient mqtt_client;
     gateway::northbound::MqttMessageMapper mapper(config_.gateway_id);
-    gateway::rule::RuleEngine rule_engine;
+    gateway::rule::RuleEngine rule_engine(config_.rules);
     Worker worker(std::move(rule_engine), std::move(mapper), mqtt_client);
 
     gateway::southbound::ModbusTcpClient modbus_client(io_context_);
@@ -35,7 +42,19 @@ int GatewayApp::run() {
         return 1;
     }
 
-    worker.process_once(*result.message);
+    gateway::queue::SpscRingBuffer<gateway::core::TelemetryMessage, kTelemetryQueueCapacity>
+        telemetry_queue;
+    if (!telemetry_queue.push(*result.message)) {
+        std::cerr << "edge_gateway queue failed: "
+                  << gateway::core::to_string(gateway::core::ErrorCode::queue_full) << '\n';
+        return 1;
+    }
+
+    std::thread worker_thread([&worker, &telemetry_queue] {
+        worker.process_one_from_queue(telemetry_queue);
+    });
+    worker_thread.join();
+
     return 0;
 }
 

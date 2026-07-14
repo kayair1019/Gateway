@@ -3,6 +3,7 @@
 #include <fstream>
 #include <stdexcept>
 #include <string>
+#include <utility>
 
 #include <nlohmann/json.hpp>
 
@@ -34,6 +35,37 @@ std::uint8_t to_u8(const nlohmann::json& json, const char* field) {
         throw std::runtime_error(std::string("config field out of uint8 range: ") + field);
     }
     return static_cast<std::uint8_t>(value);
+}
+
+gateway::rule::CompareOperator parse_compare_operator(const std::string& value) {
+    if (value == "<") {
+        return gateway::rule::CompareOperator::less_than;
+    }
+    if (value == "<=") {
+        return gateway::rule::CompareOperator::less_equal;
+    }
+    if (value == ">") {
+        return gateway::rule::CompareOperator::greater_than;
+    }
+    if (value == ">=") {
+        return gateway::rule::CompareOperator::greater_equal;
+    }
+    if (value == "==" || value == "=") {
+        return gateway::rule::CompareOperator::equal;
+    }
+
+    throw std::runtime_error("unsupported rule operator: " + value);
+}
+
+gateway::rule::RuleAction parse_rule_action(const std::string& value) {
+    if (value == "allow") {
+        return gateway::rule::RuleAction::allow;
+    }
+    if (value == "drop") {
+        return gateway::rule::RuleAction::drop;
+    }
+
+    throw std::runtime_error("unsupported rule action: " + value);
 }
 
 } // namespace
@@ -78,6 +110,18 @@ GatewayConfig load_gateway_config(const std::string& path) {
         config.queue.telemetry_capacity = json["queue"].value(
             "telemetry_capacity",
             config.queue.telemetry_capacity);
+    }
+
+    if (json.contains("rules")) {
+        for (const auto& rule_json : json["rules"]) {
+            gateway::rule::Rule rule;
+            rule.name = rule_json.at("name").get<std::string>();
+            rule.point = rule_json.at("point").get<std::string>();
+            rule.op = parse_compare_operator(rule_json.at("operator").get<std::string>());
+            rule.value = rule_json.at("value").get<double>();
+            rule.action = parse_rule_action(rule_json.value("action", "allow"));
+            config.rules.push_back(std::move(rule));
+        }
     }
 
     return config;
