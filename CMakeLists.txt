@@ -37,6 +37,7 @@ add_library(edge_gateway_core
     src/northbound/console_mqtt_client.cpp
     src/northbound/mqtt_message_mapper.cpp
     src/protocol/modbus_tcp_codec.cpp
+    src/protocol/modbus_tcp_framer.cpp
     src/rule/rule_engine.cpp
     src/runtime/command_dispatcher.cpp
     src/runtime/gateway_app.cpp
@@ -99,6 +100,7 @@ if(EGW_BUILD_TESTS)
         tests/test_modbus_device_simulator.cpp
         tests/test_modbus_point_mapper.cpp
         tests/test_modbus_tcp_codec.cpp
+        tests/test_modbus_tcp_framer.cpp
         tests/test_mqtt_message_mapper.cpp
         tests/test_rule_engine.cpp
         tests/test_spsc_ring_buffer.cpp
