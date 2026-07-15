@@ -38,6 +38,7 @@ add_library(edge_gateway_core
     src/northbound/mqtt_message_mapper.cpp
     src/protocol/modbus_tcp_codec.cpp
     src/rule/rule_engine.cpp
+    src/runtime/command_dispatcher.cpp
     src/runtime/gateway_app.cpp
     src/runtime/worker.cpp
     src/southbound/device_poller.cpp
@@ -91,6 +92,7 @@ if(EGW_BUILD_TESTS)
 
     add_executable(edge_gateway_tests
         tests/test_command_flow.cpp
+        tests/test_command_dispatcher.cpp
         tests/test_config.cpp
         tests/test_device_poller.cpp
         tests/test_message_model.cpp

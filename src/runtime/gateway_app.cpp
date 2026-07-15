@@ -9,6 +9,7 @@
 #include "gateway/northbound/mqtt_message_mapper.hpp"
 #include "gateway/queue/spsc_ring_buffer.hpp"
 #include "gateway/rule/rule_engine.hpp"
+#include "gateway/runtime/command_dispatcher.hpp"
 #include "gateway/runtime/worker.hpp"
 #include "gateway/southbound/device_poller.hpp"
 #include "gateway/southbound/modbus_tcp_client.hpp"
@@ -31,7 +32,7 @@ int GatewayApp::run() {
     gateway::northbound::ConsoleMqttClient mqtt_client;
     gateway::northbound::MqttMessageMapper mapper(config_.gateway_id);
     gateway::rule::RuleEngine rule_engine(config_.rules);
-    Worker worker(std::move(rule_engine), std::move(mapper), mqtt_client);
+    Worker worker(std::move(rule_engine), mapper, mqtt_client);
 
     gateway::southbound::ModbusTcpClient modbus_client(io_context_);
     gateway::southbound::DevicePoller poller(config_.devices.front(), modbus_client);
@@ -54,6 +55,18 @@ int GatewayApp::run() {
         worker.process_one_from_queue(telemetry_queue);
     });
     worker_thread.join();
+
+    CommandDispatcher command_dispatcher(config_, modbus_client);
+    gateway::core::CommandMessage command;
+    command.command_id = "demo-cmd-001";
+    command.device_id = config_.devices.front().device_id;
+    command.type = gateway::core::CommandType::write_register;
+    command.address = 1;
+    command.value = 4321;
+
+    const auto ack = command_dispatcher.dispatch(command);
+    const auto ack_message = mapper.map_command_ack(ack);
+    mqtt_client.publish(ack_message.topic, ack_message.payload);
 
     return 0;
 }
